@@ -1,7 +1,7 @@
 // clang-format off
 #include <bits/stdc++.h>
 #include <chrono>
-#include <ostream>
+#include <termios.h>
 using namespace std;
 using namespace chrono;
 using namespace this_thread;
@@ -31,17 +31,34 @@ const str ui_full = "█";
 const str ui_empty = "░";
 const str work_sound = "resources/'A dream…I saw a dream (subaru).mp3'";
 const str rest_sound = "resources/'never meant to belong.mp3'";
+const int FPS = 2;
+
+
+str ui_title;
+int ui_progres;
+vec<str> ui_progbar;
+
 
 // You need to install mpv
 // TODO: Make global thread so only one sound is run 
 void play(str res) { 
   thread([res] { //thread save copy
     string command = "mpv --no-terminal " + res;
+    d(command);
     system(command.c_str());
   }).detach();
 }
 
-void clear() {system("clear");}
+void clear() {
+  cout << "\033[H\033[J";
+}
+
+void UI() {
+  clear();
+  cout<<ui_title<<endl;
+  for(auto& s:ui_progbar) cout<<s;
+  cout<<ui_progbar.size()-ui_progres<<flush;
+}
 
 vec<str> new_progbar(int size) {
   vec<str> progbar(size);
@@ -49,27 +66,25 @@ vec<str> new_progbar(int size) {
   return progbar;
 }
 
-void print(vec<str> bar, int progres) {
-  for(auto& s:bar) cout<<s;
-  cout<<bar.size()-progres<<flush;
-}
 
 void loop(int goal) {
-  int progres = 0;
-  auto progbar = new_progbar(goal);
-  print(progbar, progres);
-  while(progres != goal) {
-    sleep_for(minutes(1));
-    progbar[progres] = ui_full;
-    progres++;
-    wcout<<L"\r";
-    print(progbar, progres);
+  ui_progres = 0; 
+  ui_progbar = new_progbar(goal);
+  UI();
+  while(ui_progres != goal) {
+    for(int i=0; i<FPS; i--) {
+      UI();
+      sleep_for(milliseconds(1000/FPS));
+    }
+    ui_progbar[ui_progres] = ui_full;
+    ui_progres++;
+    UI();
   }
 }
 
 void work() {
   clear();
-  p("Starting work session");
+  ui_title = "Work Session 🧠";
   play(work_sound);
   loop(work_min);
   rest();
@@ -77,7 +92,7 @@ void work() {
 
 void rest() {
   clear();
-  p("Starting rest session");
+  ui_title = "Rest Session 💪";
   play(rest_sound);
   loop(rest_min);
   work();

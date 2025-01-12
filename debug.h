@@ -1,6 +1,7 @@
 // clang-format off
 void print(char x){cerr<<'\''<<x<<'\'';}
 void print(string &x){cerr<<'"'<<x<<'\"';}
+void print(const char* x){cerr<<'"'<<x<<'"';};
 void print(bool x){cerr<<(x?"true":"false");}
 
 template <typename T>

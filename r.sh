@@ -1,3 +1,4 @@
+echo off
 set -x
 rm exe
 clear
