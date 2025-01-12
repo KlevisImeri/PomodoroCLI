@@ -26,7 +26,7 @@ void work();
 void rest();
 
 // Settings
-const int work_min = 30;
+const int work_min = 60;
 const int rest_min = 5;
 const str work_sound = "resources/'A dream…I saw a dream (subaru).mp3'";
 const str rest_sound = "resources/'never meant to belong.mp3'";
@@ -42,10 +42,12 @@ const str cyan_light = "\033[96m";
 const str color_reset = "\033[0m";
 
 // UI Data
-const str ui_empty = "░";
 const str ui_full = "█";
+const str ui_empty = "░";
 str ui_title;
 str ui_title_color = magenta_light;
+int ui_total_min = 0;
+str ui_total_color = magenta_light; 
 int ui_progres;
 vec<str> ui_progbar;
 
@@ -69,6 +71,9 @@ void UI() {
   cout<<ui_title_color<<ui_title<<color_reset<<endl;
   for(auto& s:ui_progbar) cout<<s;
   cout<<ui_progbar.size()-ui_progres<<endl;
+  int hours = ui_total_min/60;
+  int min = ui_total_min%60;
+  cout<< "Total: "<<magenta_light<<hours<<':'<<min<<color_reset<<endl;
 }
 
 vec<str> new_progbar(int size) {
@@ -83,9 +88,9 @@ void loop(int goal) {
   ui_progbar = new_progbar(goal);
   UI();
   while(ui_progres != goal) {
-    for(int i=0; i<FPS; i--) {
+    for(int i=0; i<FPS; i++) {
       UI();
-      sleep_for(milliseconds(1000/FPS));
+      sleep_for(seconds(60/FPS));
     }
     ui_progbar[ui_progres] = ui_full;
     ui_progres++;
@@ -99,6 +104,7 @@ void work() {
   ui_title_color = red_light;
   play(work_sound);
   loop(work_min);
+  ui_total_min += work_min;
   rest();
 }
 
