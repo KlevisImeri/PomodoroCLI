@@ -25,16 +25,27 @@ using wstr = wstring;
 void work(); 
 void rest();
 
+// Settings
 const int work_min = 30;
 const int rest_min = 5;
-const str ui_full = "█";
-const str ui_empty = "░";
 const str work_sound = "resources/'A dream…I saw a dream (subaru).mp3'";
 const str rest_sound = "resources/'never meant to belong.mp3'";
-const int FPS = 2;
+const int FPS = 10;
 
+// Colors
+const str blue_light = "\033[94m";
+const str red_light = "\033[91m";
+const str green_light = "\033[92m";
+const str yellow_light = "\033[93m";
+const str magenta_light = "\033[95m";
+const str cyan_light = "\033[96m";
+const str color_reset = "\033[0m";
 
+// UI Data
+const str ui_empty = "░";
+const str ui_full = "█";
 str ui_title;
+str ui_title_color = magenta_light;
 int ui_progres;
 vec<str> ui_progbar;
 
@@ -55,9 +66,9 @@ void clear() {
 
 void UI() {
   clear();
-  cout<<ui_title<<endl;
+  cout<<ui_title_color<<ui_title<<color_reset<<endl;
   for(auto& s:ui_progbar) cout<<s;
-  cout<<ui_progbar.size()-ui_progres<<flush;
+  cout<<ui_progbar.size()-ui_progres<<endl;
 }
 
 vec<str> new_progbar(int size) {
@@ -85,6 +96,7 @@ void loop(int goal) {
 void work() {
   clear();
   ui_title = "Work Session 🧠";
+  ui_title_color = red_light;
   play(work_sound);
   loop(work_min);
   rest();
@@ -93,6 +105,7 @@ void work() {
 void rest() {
   clear();
   ui_title = "Rest Session 💪";
+  ui_title_color = blue_light;
   play(rest_sound);
   loop(rest_min);
   work();
